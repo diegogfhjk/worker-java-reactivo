@@ -67,16 +67,108 @@ Este Worker reactivo procesa pedidos en un entorno de comercio electrónico. Los
 ### **Requisitos**
 
 #### **Tecnologías**
-•	Java 21+
-•	Spring Boot 3.3.x
-•	Kafka 3.x
-•	MongoDB
-•	Docker (Opcional): Para ejecutar servicios como Kafka y MongoDB localmente.
+* Java 21+
+* Spring Boot 3.3.x
+* Kafka 3.x
+* MongoDB
+* Docker (Opcional): Para ejecutar servicios como Kafka y MongoDB localmente.
 
 ## **Instalación**
 
 1. Clonar el Repositorio
 ```bash
-git clone https://github.com/tu-usuario/worker-reactivo-pedidos.git
+git clone https://github.com/diegogfhjk/worker-java-reactivo.git
 cd worker-reactivo-pedidos
+```
+
+## **Configuraciones Requeridas**
+
+El archivo de configuración (application.yml) contiene los parámetros necesarios para ejecutar el proyecto. A continuación, se explican las configuraciones clave y cómo adaptarlas según tu entorno:
+
+### **Configuraciones del Servidor**
+```yml
+server:
+  port: 8082
+spring:
+  application:
+    name: "WokerReactivo"
+```
+* server.port: Puerto en el que la aplicación estará escuchando. Por defecto: 8082.
+
+## **Base de Datos (MongoDB)**
+```yml
+spring:
+  data:
+    mongodb:
+      uri: "mongodb://localhost:27017/orders"
+```
+* spring.data.mongodb.uri: URI de conexión a MongoDB. 
+  * Cambiar si estás usando un servicio de MongoDB en la nube (como Atlas) o en otro host/puerto.
+
+## **API REST para Productos (Go)**
+```yml
+adapter:
+  restconsumer:
+    url: "http://localhost:8080"
+```
+* adapter.restconsumer.url: URL base de la API REST que proporciona los detalles de los productos.
+  * Cambiar si la API Go está en un host/puerto diferente o expuesta en un entorno de producción.
+
+## **API GraphQL para Clientes (Nest)**
+```yml
+adapter:
+  grapql:
+    url: "http://localhost:3000/graphql"
+```
+* adapter.grapql.url: URL base de la API GraphQL que proporciona información sobre los clientes.
+  * Cambiar si la API está en otro host/puerto o es accesible en una URL diferente.
+
+## **Kafka**
+```yml
+adapter:
+  kafka:
+    url: "localhost:9092"
+```
+* adapter.kafka.url: Dirección del servidor Kafka. Por defecto: localhost:9092.
+  * Cambiar si Kafka está en otro host o puerto, o si estás utilizando un clúster Kafka en la nube.
+
+## **Resilience4j (Circuit Breakers)**
+```yml
+resilience4j:
+  circuitbreaker:
+    instances:
+      testGet:
+        registerHealthIndicator: true
+        failureRateThreshold: 50
+        slowCallRateThreshold: 50
+        slowCallDurationThreshold: "2s"
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 10
+        waitDurationInOpenState: "10s"
+```
+* testGet y testPost: Configuración de Circuit Breakers para las llamadas a las APIs externas.
+  * failureRateThreshold: Porcentaje máximo de fallos permitido antes de abrir el circuito.
+  * slowCallRateThreshold: Porcentaje máximo de llamadas lentas permitido.
+  * slowCallDurationThreshold: Duración que define una llamada lenta (2 segundos por defecto).
+  * waitDurationInOpenState: Tiempo que el circuito permanecerá abierto antes de intentar reabrirlo.
+
+Para incluir una consideración importante en un README, utiliza una sección destacada o un bloque de advertencia que resalte claramente la información crítica. Aquí tienes un ejemplo de cómo hacerlo:
+
+## ⚠️ Consideraciones Importantes
+### 1.	Servicios Necesarios:<br>
+Antes de ejecutar este proyecto, asegúrate de que los siguientes servicios estén en funcionamiento:
+* Kafka: Debe estar configurado y corriendo en el host y puerto especificados en application.yml.
+* MongoDB: Asegúrate de que la base de datos esté disponible y accesible.
+
+
+## **Ejecución**
+1. Compila el proyecto:
+```bash
+bash ./gradlew clean build
+```
+
+2. Ejecuta la aplicación:
+```bash
+bash ./gradlew bootRun
 ```
