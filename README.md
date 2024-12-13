@@ -155,6 +155,15 @@ resilience4j:
 
 Para incluir una consideración importante en un README, utiliza una sección destacada o un bloque de advertencia que resalte claramente la información crítica. Aquí tienes un ejemplo de cómo hacerlo:
 
+## **Estructura de mensaje de entrada por kafka**
+```json
+{
+    "id": "124",
+    "productosIds": ["10", "2"],
+    "clientId": "5"
+}
+```
+
 ## ⚠️ Consideraciones Importantes
 ### 1.	Servicios Necesarios:<br>
 Antes de ejecutar este proyecto, asegúrate de que los siguientes servicios estén en funcionamiento:
