@@ -9,7 +9,6 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'jacoco'
     apply plugin: 'io.spring.dependency-management'
 
     compileJava.dependsOn validateStructure
@@ -47,38 +46,9 @@ subprojects {
         }
     }
 
-    test.finalizedBy(project.tasks.jacocoTestReport)
-
-
-    jacocoTestReport {
-        dependsOn test, 'pitest'
-        reports {
-            xml.setRequired true
-            xml.setOutputLocation layout.buildDirectory.file("reports/jacoco.xml")
-            csv.setRequired false
-            html.setOutputLocation layout.buildDirectory.dir("reports/jacocoHtml")
-        }
-    }
 
 }
 
-jacoco {
-    toolVersion = "${jacocoVersion}"
-    reportsDirectory.set(layout.buildDirectory.dir("reports"))
-}
-
-tasks.register('jacocoMergedReport', JacocoReport) {
-    dependsOn = [test, subprojects.jacocoTestReport, pitestReportAggregate]
-    additionalSourceDirs.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories.setFrom files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories.setFrom files(subprojects.sourceSets.main.output)
-    executionData.setFrom project.fileTree(dir: '.', include: '**/build/jacoco/test.exec')
-    reports {
-        xml.setRequired true
-        csv.setRequired false
-        html.setRequired true
-    }
-}
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
